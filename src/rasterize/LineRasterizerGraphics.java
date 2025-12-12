@@ -11,10 +11,6 @@ public class LineRasterizerGraphics extends LineRasterizer {
         super(raster);
     }
 
-    public void rasterize(Line line) {
-
-    }
-
     @Override
     public void rasterize(int x1, int y1, int x2, int y2) {
         Graphics g = raster.getImage().getGraphics();
