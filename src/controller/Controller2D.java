@@ -82,6 +82,6 @@ public class Controller2D {
             filler.fill();
         }
 
-        panel.repaint();
+        //panel.repaint();
     }
 }

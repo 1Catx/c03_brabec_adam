@@ -6,7 +6,7 @@ import transforms.Point3D;
 public class Cube extends Solid {
 
     public Cube(double size) {
-        color = new Col(0xff0000);
+        color = new Col(0xffaa00);
 
         double s = size / 2.0;
 
