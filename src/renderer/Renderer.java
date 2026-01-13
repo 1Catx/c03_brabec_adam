@@ -22,59 +22,9 @@ public class Renderer {
         this.proj = proj;
     }
 
-    /* 
     public void renderSolid(Solid solid) {
-    if (lineRasterizer instanceof LineRasterizerGraphics lg) {
-        lg.setColor(solid.getColor());
-    }
-
-        for (int i = 0; i < solid.getIb().size() - 1; i += 2) {
-            int indexA = solid.getIb().get(i);
-            int indexB = solid.getIb().get(i + 1);
-
-            Point3D pointA = solid.getVb().get(indexA);
-            Point3D pointB = solid.getVb().get(indexB);
-
-            // Modelovací transformace (model) = model space -> world space
-            pointA = pointA.mul(solid.getModel());
-            pointB = pointB.mul(solid.getModel());
-
-//            pointA = pointA.mul(solid.getModel()).mul(view).mul(proj);
-
-            // Pohledová tranformace (view) = world space -> view space
-            pointA = pointA.mul(view);
-            pointB = pointB.mul(view);
-
-            // Projekční tranformace (projection) = view space -> clip space
-            pointA = pointA.mul(proj);
-            pointB = pointB.mul(proj);
-
-            // TODO: Ořezání - slide 88
-
-            // TODO: Dehomogenizace - x, y, z, w = x/w, y/w, z/w, w/w = NDC
-            // pouzor raději ošetřit dělení nulou
-            pointA = pointA.mul(1 / pointA.getW());
-            pointB = pointB.mul(1 / pointB.getW());
-
-            // Transformace do okna obrazovky = NDC -> screen space
-            Vec3D vecA = transformToWindow(pointA);
-            Vec3D vecB = transformToWindow(pointB);
-
-
-            
-            lineRasterizer.rasterize(
-                    (int) Math.round(vecA.getX()),
-                    (int) Math.round(vecA.getY()),
-                    (int) Math.round(vecB.getX()),
-                    (int) Math.round(vecB.getY())
-            );
-        }
-    }
-    */
-
-    public void renderSolid(Solid solid) {
-    if (lineRasterizer instanceof LineRasterizerGraphics lg) {
-        lg.setColor(solid.getColor());
+    if (lineRasterizer instanceof LineRasterizerGraphics lg) { 
+        lg.setColor(solid.getColor()); // jinak by všechno bylo v jedné barvě
     }
 
     for (int i = 0; i < solid.getIb().size() - 1; i += 2) {
@@ -105,20 +55,21 @@ public class Renderer {
         double wA = pointA.getW();
         double wB = pointB.getW();
 
+        // OŘEZÁNÍ: když je w skoro nulové, hranu radši nekreslíme
         if (Math.abs(wA) < 1e-6 || Math.abs(wB) < 1e-6) {
-            // skoro nulové w → radši nekreslit
             continue;
         }
 
+        // DEHOMOGENIZACE: transformace z clip space do NDC (dělení souřadnic w)
         pointA = pointA.mul(1.0 / wA);
         pointB = pointB.mul(1.0 / wB);
 
-        // "přísné" ořezání: když je celý bod mimo [-1,1], hranu zahodíme
+        // OŘEZÁNÍ: když je celý bod mimo [-1,1], hranu zahodíme
         if (isOutsideNDC(pointA) || isOutsideNDC(pointB)) {
             continue;
         }
 
-        // NDC -> screen space
+        // TRANSFORMACE: do okna obrazovky, NDC -> screen space
         Vec3D vecA = transformToWindow(pointA);
         Vec3D vecB = transformToWindow(pointB);
 
@@ -130,7 +81,6 @@ public class Renderer {
         );
     }
 }
-
 
     private Vec3D transformToWindow(Point3D p) {
         return new Vec3D(p).mul(new Vec3D(1, -1, 1))

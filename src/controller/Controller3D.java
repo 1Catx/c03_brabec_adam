@@ -9,12 +9,12 @@ import transforms.Mat4;
 import transforms.Mat4PerspRH;
 import transforms.Mat4RotY;
 import transforms.Mat4Transl;
+import transforms.Point3D;
 import transforms.Vec3D;
 import view.Panel;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -31,6 +31,14 @@ public class Controller3D {
 
     private Solid cube = new Cube(1.0);
     private Solid prism = new Prism(10, 0.5, 1.0);
+
+    // 4 body pro křivku
+    Point3D p0 = cube.getVb().get(0);
+    Point3D p3 = cube.getVb().get(6);
+    Point3D p1 = new Point3D(0, 1, 1.5);
+    Point3D p2 = new Point3D(-1, 0.5, 0.2);
+
+    BezierCurve curve = new BezierCurve(p0, p1, p2, p3);
 
     private int lastX, lastY;
     private boolean mouseDown = false;
@@ -71,8 +79,11 @@ public class Controller3D {
                 proj
         );
 
-        cube.setModel(new Mat4Transl(0.5, 1.0, 0)); // posun krychle
+        cube.setModel(new Mat4Transl(0.7, 0.5, 0)); // posun krychle
         prism.setModel(new Mat4Transl(-1.0, 0, 0)); //posun prismu
+
+        curve = new BezierCurve(p0, p1, p2, p3);
+        curve.setModel(cube.getModel());
 
         initListeners();
 
@@ -143,6 +154,8 @@ public class Controller3D {
 
         renderer.renderSolid(cube);
         renderer.renderSolid(prism);
+
+        renderer.renderSolid(curve);
 
         panel.repaint();
     }
