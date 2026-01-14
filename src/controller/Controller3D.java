@@ -31,13 +31,23 @@ public class Controller3D {
     private Solid cube = new Cube(1.0);
     private Solid prism = new Prism(10, 0.5, 1.0);
 
-    // 4 body pro křivku
+    // 2) LOKÁLNÍ vrcholy krychle
     Point3D p0 = cube.getVb().get(0);
     Point3D p3 = cube.getVb().get(6);
-    Point3D p1 = new Point3D(0, 1, 1.5);
-    Point3D p2 = new Point3D(-1, 0.5, 0.2);
 
-    BezierCurve curve = new BezierCurve(p0, p1, p2, p3);
+    // 3) Řídicí body PRO KAŽDOU KŘIVKU
+    Point3D b1 = new Point3D(0, 1, 1.5);
+    Point3D b2 = new Point3D(-1, 0.5, 0.2);
+
+    Point3D f1 = new Point3D(0, 0.2, 0.0);
+    Point3D f2 = new Point3D(0.1, 1.0, -1.0);
+
+    Point3D c1 = new Point3D(0, 0, 0);
+    Point3D c2 = new Point3D(0.5, 1.5, 0.0);
+
+    private Solid bezierCurve = new BezierCurve(p0, b1, b2, p3);
+    private Solid fergusonCurve = new FergusonCurve(p0, f1, f2, p3);
+    private Solid coonsCurve = new CoonsCurve(p0, c1, c2, p3);
 
     private int lastX, lastY;
     private boolean mouseDown = false;
@@ -81,8 +91,9 @@ public class Controller3D {
         cube.setModel(new Mat4Transl(0.7, 0.5, 0)); // posun krychle
         prism.setModel(new Mat4Transl(-1.0, 0, 0)); //posun prismu
 
-        curve = new BezierCurve(p0, p1, p2, p3);
-        curve.setModel(cube.getModel());
+        bezierCurve.setModel(cube.getModel());
+        fergusonCurve.setModel(cube.getModel());
+        coonsCurve.setModel(cube.getModel());
 
         initListeners();
 
@@ -154,7 +165,9 @@ public class Controller3D {
         renderer.renderSolid(cube);
         renderer.renderSolid(prism);
 
-        renderer.renderSolid(curve);
+        renderer.renderSolid(bezierCurve);
+        renderer.renderSolid(fergusonCurve);
+        renderer.renderSolid(coonsCurve);
 
         panel.repaint();
     }

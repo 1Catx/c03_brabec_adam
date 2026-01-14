@@ -8,10 +8,7 @@ public class BezierCurve extends Solid {
     public BezierCurve(Point3D p0, Point3D p1, Point3D p2, Point3D p3) {
         color = new Col(0x00ffff);
 
-        Cubic c = new Cubic(
-            Cubic.BEZIER,  // typ – Bézierova kubika
-            p0, p1, p2, p3 // 4 řídící body
-        );
+        Cubic c = new Cubic(Cubic.BEZIER, p0, p1, p2, p3);
 
         int samples = 50; // počet úseček v křivce, neboli kolik malých příměk použijeme k přebližnému vyklereslení hladké kčivky
 
