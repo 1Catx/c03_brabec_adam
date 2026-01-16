@@ -14,9 +14,11 @@ import view.Panel;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+
 
 public class Controller3D {
     private final Panel panel;
@@ -52,8 +54,11 @@ public class Controller3D {
     private int lastX, lastY;
     private boolean mouseDown = false;
 
-    private final double MOVE_SPEED = 0.1;     // krok WSAD
+    private final double MOVE_SPEED = 0.1; // krok WSAD
     private final double ROTATE_SPEED = 0.005; // citlivost myši
+
+    private double fov = Math.toRadians(90); // aktuální FOV
+    private final double ZOOM_STEP = Math.toRadians(5); // krok zoomu (5°)
 
     private Camera camera;
     private Mat4 proj;
@@ -74,7 +79,7 @@ public class Controller3D {
                 .withFirstPerson(true);
 
         proj = new Mat4PerspRH(
-                Math.toRadians(90),
+                fov,
                 panel.getRaster().getHeight() / (double) panel.getRaster().getWidth(),
                 0.1,
                 100
@@ -148,6 +153,19 @@ public class Controller3D {
                 drawScene();
             }
         });
+
+        panel.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                int notches = e.getWheelRotation(); 
+                fov += notches * ZOOM_STEP;
+
+                fov = Math.max(Math.toRadians(15), Math.min(Math.toRadians(120), fov));
+
+                updateProjection();
+                drawScene();
+            }
+        });
     }
 
     private void drawScene() {
@@ -170,5 +188,16 @@ public class Controller3D {
         renderer.renderSolid(coonsCurve);
 
         panel.repaint();
+    }
+
+    private void updateProjection() {
+        double aspect = panel.getRaster().getHeight() / (double) panel.getRaster().getWidth();
+        proj = new Mat4PerspRH(
+                fov,
+                aspect,
+                0.1,
+                100
+        );
+        renderer.setProj(proj);  // předáme novou matici rendereru
     }
 }

@@ -6,7 +6,7 @@ import transforms.Point3D;
 
 public class FergusonCurve extends Solid {
     public FergusonCurve(Point3D p0, Point3D p1, Point3D p2, Point3D p3) {
-        color = new Col(0x00FF00);
+        color = new Col(0x40E0D0);
 
         Cubic cubic = new Cubic(Cubic.FERGUSON, p0, p1, p2, p3);
 

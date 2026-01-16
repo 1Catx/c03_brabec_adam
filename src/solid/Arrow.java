@@ -1,9 +1,11 @@
 package solid;
 
+import transforms.Col;
 import transforms.Point3D;
 
 public class Arrow extends Solid {
 	public Arrow() {
+        color = new Col(0xff0000);
         // Naplním vb
         vb.add(new Point3D(0, 0, 0)); // v0
         vb.add(new Point3D(0.8, 0, 0)); // v1
